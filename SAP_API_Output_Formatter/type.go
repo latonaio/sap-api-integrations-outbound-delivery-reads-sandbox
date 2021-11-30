@@ -70,6 +70,7 @@ type DeliveryDocumentHeader struct {
 }
 
 type DeliveryDocumentItem struct {
+	DeliveryDocument               string `json:"DeliveryDocument"`
 	DeliveryDocumentItem           string `json:"DeliveryDocumentItem"`
 	BaseUnit                       string `json:"BaseUnit"`
 	ActualDeliveryQuantity         string `json:"ActualDeliveryQuantity"`
@@ -120,12 +121,18 @@ type DeliveryDocumentItem struct {
 	TransportationGroup            string `json:"TransportationGroup"`
 }
 
-type PartnerFunction struct {
+type DeliveryDocumentPartner struct {
+	DeliveryDocument     string `json:"DeliveryDocument"`
+	PartnerFunction      string `json:"PartnerFunction"`
+	Customer             string `json:"Customer"`
+	Supplier             string `json:"Supplier"`
+	BusinessPartnerName1 string `json:"BusinessPartnerName1"`
+}
+
+type DeliveryDocumentPartnerAddress struct {
+	DeliveryDocument       string `json:"DeliveryDocument"`
 	PartnerFunction        string `json:"PartnerFunction"`
 	AddressID              string `json:"AddressID"`
-	Customer               string `json:"Customer"`
-	Supplier               string `json:"Supplier"`
-	BusinessPartnerName1   string `json:"BusinessPartnerName1"`
 	Country                string `json:"Country"`
 	Region                 string `json:"Region"`
 	StreetName             string `json:"StreetName"`
