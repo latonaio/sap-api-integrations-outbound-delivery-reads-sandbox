@@ -1,6 +1,6 @@
 package responses
 
-type OutboundDeliveryDocumentPartner struct {
+type PartnerFunction struct {
 	D struct {
 		Results []struct {
 			Metadata struct {

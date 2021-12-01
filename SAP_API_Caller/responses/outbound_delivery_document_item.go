@@ -1,6 +1,6 @@
 package responses
 
-type OutboundDeliveryDocumentItem struct {
+type Item struct {
 	D struct {
 		Results []struct {
 			Metadata struct {

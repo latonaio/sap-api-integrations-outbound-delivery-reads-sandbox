@@ -1,6 +1,6 @@
 package sap_api_output_formatter
 
-type DeliveryDocument struct {
+type OutboundDelivery struct {
 	ConnectionKey    string `json:"connection_key"`
 	Result           bool   `json:"result"`
 	RedisKey         string `json:"redis_key"`
@@ -10,7 +10,7 @@ type DeliveryDocument struct {
 	Deleted          bool   `json:"deleted"`
 }
 
-type DeliveryDocumentHeader struct {
+type Header struct {
 	DeliveryDocument              string `json:"DeliveryDocument"`
 	DeliveryDocumentType          string `json:"DeliveryDocumentType"`
 	DocumentDate                  string `json:"DocumentDate"`
@@ -69,7 +69,7 @@ type DeliveryDocumentHeader struct {
 	TransportationPlanningTime    string `json:"TransportationPlanningTime"`
 }
 
-type DeliveryDocumentItem struct {
+type Item struct {
 	DeliveryDocument               string `json:"DeliveryDocument"`
 	DeliveryDocumentItem           string `json:"DeliveryDocumentItem"`
 	BaseUnit                       string `json:"BaseUnit"`
@@ -121,7 +121,7 @@ type DeliveryDocumentItem struct {
 	TransportationGroup            string `json:"TransportationGroup"`
 }
 
-type DeliveryDocumentPartner struct {
+type PartnerFunction struct {
 	DeliveryDocument     string `json:"DeliveryDocument"`
 	PartnerFunction      string `json:"PartnerFunction"`
 	Customer             string `json:"Customer"`
@@ -129,7 +129,7 @@ type DeliveryDocumentPartner struct {
 	BusinessPartnerName1 string `json:"BusinessPartnerName1"`
 }
 
-type DeliveryDocumentPartnerAddress struct {
+type PartnerAddress struct {
 	DeliveryDocument       string `json:"DeliveryDocument"`
 	PartnerFunction        string `json:"PartnerFunction"`
 	AddressID              string `json:"AddressID"`

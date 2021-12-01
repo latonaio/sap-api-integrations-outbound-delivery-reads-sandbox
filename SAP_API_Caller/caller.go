@@ -29,30 +29,29 @@ func (c *SAPAPICaller) AsyncGetOutboundDelivery(DeliveryDocument, PartnerFunctio
 
 	wg.Add(4)
 	go func() {
-		c.OutboundDeliveryDocumentHeader(DeliveryDocument)
+		c.Header(DeliveryDocument)
 		wg.Done()
 	}()
 
-
 	go func() {
-		c.OutboundDeliveryDocumentPartner(DeliveryDocument, PartnerFunction)
+		c.PartnerFunction(DeliveryDocument, PartnerFunction)
 		wg.Done()
 	}()
 	
 	go func() {
-		c.OutboundDeliveryDocumentPartnerAddress(DeliveryDocument, PartnerFunction)
+		c.PartnerAddress(DeliveryDocument, PartnerFunction)
 		wg.Done()
 	}()
 	
 	go func() {
-		c.OutboundDeliveryDocumentItem(DeliveryDocument, DeliveryDocumentItem)
+		c.Item(DeliveryDocument, DeliveryDocumentItem)
 		wg.Done()
 	}()
 	wg.Wait()
 }
 
-func (c *SAPAPICaller) OutboundDeliveryDocumentHeader(DeliveryDocument string) {
-	res, err := c.callOutboundDeliveryDocumentSrvAPIRequirementHeader("A_OutbDeliveryHeader", DeliveryDocument)
+func (c *SAPAPICaller) Header(DeliveryDocument string) {
+	res, err := c.callOutboundDeliverySrvAPIRequirementHeader("A_OutbDeliveryHeader", DeliveryDocument)
 	if err != nil {
 		c.log.Error(err)
 		return
@@ -62,8 +61,8 @@ func (c *SAPAPICaller) OutboundDeliveryDocumentHeader(DeliveryDocument string) {
 
 }
 
-func (c *SAPAPICaller) OutboundDeliveryDocumentPartner(DeliveryDocument, PartnerFunction string) {
-	res, err := c.callOutboundDeliveryDocumentSrvAPIRequirementPartner("A_OutbDeliveryHeader('{DeliveryDocument}')/to_DeliveryDocumentPartner", DeliveryDocument, PartnerFunction)
+func (c *SAPAPICaller) PartnerFunction(DeliveryDocument, PartnerFunction string) {
+	res, err := c.callOutboundDeliverySrvAPIRequirementPartnerFunction("A_OutbDeliveryHeader('{DeliveryDocument}')/to_DeliveryDocumentPartner", DeliveryDocument, PartnerFunction)
 	if err != nil {
 		c.log.Error(err)
 		return
@@ -72,8 +71,8 @@ func (c *SAPAPICaller) OutboundDeliveryDocumentPartner(DeliveryDocument, Partner
 	c.log.Info(res)
 
 }
-func (c *SAPAPICaller) OutboundDeliveryDocumentPartnerAddress(PartnerFunction, DeliveryDocument, AddressID string) {
-	res, err := c.callOutboundDeliveryDocumentSrvAPIRequirementPartnerAddress("/A_OutbDeliveryPartner(PartnerFunction='{PartnerFunction}',SDDocument='{SDDocument}')/to_Address", PartnerFunction, DeliveryDocument, AddressID)
+func (c *SAPAPICaller) PartnerAddress(PartnerFunction, DeliveryDocument, AddressID string) {
+	res, err := c.callOutboundDeliverySrvAPIRequirementPartnerAddress("/A_OutbDeliveryPartner(PartnerFunction='{PartnerFunction}',SDDocument='{SDDocument}')/to_Address", PartnerFunction, DeliveryDocument, AddressID)
 	if err != nil {
 		c.log.Error(err)
 		return
@@ -83,8 +82,8 @@ func (c *SAPAPICaller) OutboundDeliveryDocumentPartnerAddress(PartnerFunction, D
 
 }
 
-func (c *SAPAPICaller) OutboundDeliveryDocumentItem(DeliveryDocument, DeliveryDocumentItem string) {
-	res, err := c.callOutboundDeliveryDocumentSrvAPIRequirementItem("A_OutbDeliveryItem", DeliveryDocument, DeliveryDocumentItem)
+func (c *SAPAPICaller) Item(DeliveryDocument, DeliveryDocumentItem string) {
+	res, err := c.callOutboundDeliverySrvAPIRequirementItem("A_OutbDeliveryItem", DeliveryDocument, DeliveryDocumentItem)
 	if err != nil {
 		c.log.Error(err)
 		return
@@ -93,7 +92,7 @@ func (c *SAPAPICaller) OutboundDeliveryDocumentItem(DeliveryDocument, DeliveryDo
 	c.log.Info(res)
 
 
-func (c *SAPAPICaller) callOutboundDeliveryDocumentSrvAPIRequirementHeader(api, DeliveryDocument string) ([]byte, error) {
+func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementHeader(api, DeliveryDocument string) ([]byte, error) {
 	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -116,7 +115,7 @@ func (c *SAPAPICaller) callOutboundDeliveryDocumentSrvAPIRequirementHeader(api, 
 	return byteArray, nil
 }
 
-func (c *SAPAPICaller) callOutboundDeliveryDocumentSrvAPIRequirementPartner(api, DeliveryDocument, PartnerFunction string) ([]byte, error) {
+func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementPartnerFunction(api, DeliveryDocument, PartnerFunction string) ([]byte, error) {
 	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -139,7 +138,7 @@ func (c *SAPAPICaller) callOutboundDeliveryDocumentSrvAPIRequirementPartner(api,
 	return byteArray, nil
 }
 
-func (c *SAPAPICaller) callOutboundDeliveryDocumentSrvAPIRequirementPartnerAddress(api, PartnerFunction, DeliveryDocument, AddressID string) ([]byte, error) {
+func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementPartnerAddress(api, PartnerFunction, DeliveryDocument, AddressID string) ([]byte, error) {
 	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
@@ -162,7 +161,7 @@ func (c *SAPAPICaller) callOutboundDeliveryDocumentSrvAPIRequirementPartnerAddre
 	return byteArray, nil
 }
 
-func (c *SAPAPICaller) callOutboundDeliveryDocumentSrvAPIRequirementItem(api, DeliveryDocument, DeliveryDocumentItem string) ([]byte, error) {
+func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementItem(api, DeliveryDocument, DeliveryDocumentItem string) ([]byte, error) {
 	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
