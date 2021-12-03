@@ -15,4 +15,40 @@ sap-api-integrations-outbound-delivery-reads は、主にエッジコンピュ�
 
 ## クラウド環境での利用
 
-sap-api-integrations-outbound-delivery-reads は、外部システムがクラウド環境である場合にSAPと統合するときにおいても、利用可能なように設計されています。  
+sap-api-integrations-outbound-delivery-reads は、外部システムがクラウド環境である場合にSAPと統合するときにおいても、利用可能なように設計されています。 
+
+## SAP_API_Caller/responses/outbound_delivery_document_partner_address.goの形式
+
+SAP_API_Caller/responses/outbound_delivery_document_partner_address.goは、SAP　APIのバージョンが２のため形式が異なります。
+```
+type PartnerAddress struct {
+	D struct {
+			Metadata struct {
+				ID   string `json:"id"`
+				URI  string `json:"uri"`
+				Type string `json:"type"`
+			    Etag string `json:"etag"`
+			} `json:"__metadata"`
+			AddressID              string `json:"AddressID"`
+			Country                string `json:"Country"`
+			Region                 string `json:"Region"`
+			StreetName             string `json:"StreetName"`
+			CityName               string `json:"CityName"`
+			PostalCode             string `json:"PostalCode"`
+			CorrespondenceLanguage string `json:"CorrespondenceLanguage"`
+			FaxNumber              string `json:"FaxNumber"`
+			PhoneNumber            string `json:"PhoneNumber"`
+	} `json:"d"`
+}
+```
+SAP_API_Caller/caller.goにおいての該当箇所は下記のとおりです。
+```
+func (c *SAPAPICaller) PartnerAddress(partnerFunction, sDDocument string) {
+	data, err := c.callOutboundDeliverySrvAPIRequirementPartnerAddress(fmt.Sprintf("A_OutbDeliveryPartner(PartnerFunction='%s',SDDocument='%s')/to_Address2", partnerFunction, sDDocument), partnerFunction, sDDocument)
+	if err != nil {
+		c.log.Error(err)
+		return
+	}
+	c.log.Info(data)
+}
+```

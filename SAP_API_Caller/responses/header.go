@@ -13,8 +13,8 @@ type Header struct {
 			DocumentDate                  string `json:"DocumentDate"`
 			ActualGoodsMovementDate       string `json:"ActualGoodsMovementDate"`
 			ActualDeliveryRoute           string `json:"ActualDeliveryRoute"`
-			Shippinglocationtimezone      string `json:"Shippinglocationtimezone"`
-			Receivinglocationtimezone     string `json:"Receivinglocationtimezone"`
+            Shippinglocationtimezone      string `json:"Shippinglocationtimezone"`
+            Receivinglocationtimezone     string `json:"Receivinglocationtimezone"`
 			ActualGoodsMovementTime       string `json:"ActualGoodsMovementTime"`
 			BillingDocumentDate           string `json:"BillingDocumentDate"`
 			CompleteDeliveryIsDefined     bool   `json:"CompleteDeliveryIsDefined"`
@@ -37,7 +37,7 @@ type Header struct {
 			HeaderVolumeUnit              string `json:"HeaderVolumeUnit"`
 			HeaderWeightUnit              string `json:"HeaderWeightUnit"`
 			IncotermsClassification       string `json:"IncotermsClassification"`
-			IsExportDelivery              bool   `json:"IsExportDelivery"`
+			IsExportDelivery              string `json:"IsExportDelivery"`
 			LastChangeDate                string `json:"LastChangeDate"`
 			LoadingDate                   string `json:"LoadingDate"`
 			LoadingPoint                  string `json:"LoadingPoint"`

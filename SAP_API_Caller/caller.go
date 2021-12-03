@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	sap_api_output_formatter "sap-api-integrations-outbound-delivery-reads/SAP_API_Output_Formatter"
 	"strings"
 	"sync"
 
 	"github.com/latonaio/golang-logging-library/logger"
+	"golang.org/x/xerrors"
 )
 
 type SAPAPICaller struct {
@@ -24,162 +26,174 @@ func NewSAPAPICaller(baseUrl string, l *logger.Logger) *SAPAPICaller {
 	}
 }
 
-func (c *SAPAPICaller) AsyncGetOutboundDelivery(DeliveryDocument, PartnerFunction, DeliveryDocumentItem string) {
+func (c *SAPAPICaller) AsyncGetOutboundDelivery(deliveryDocument, sDDocument, partnerFunction, deliveryDocumentItem string) {
 	wg := &sync.WaitGroup{}
 
 	wg.Add(4)
-	go func() {
-		c.Header(DeliveryDocument)
+	func() {
+		c.Header(deliveryDocument)
 		wg.Done()
 	}()
-
-	go func() {
-		c.PartnerFunction(DeliveryDocument, PartnerFunction)
+	func() {
+		c.PartnerFunction(sDDocument, partnerFunction)
 		wg.Done()
 	}()
-	
-	go func() {
-		c.PartnerAddress(DeliveryDocument, PartnerFunction)
+	func() {
+		c.PartnerAddress(partnerFunction, sDDocument)
 		wg.Done()
 	}()
-	
-	go func() {
-		c.Item(DeliveryDocument, DeliveryDocumentItem)
+	func() {
+		c.Item(deliveryDocument, deliveryDocumentItem)
 		wg.Done()
 	}()
 	wg.Wait()
 }
 
-func (c *SAPAPICaller) Header(DeliveryDocument string) {
-	res, err := c.callOutboundDeliverySrvAPIRequirementHeader("A_OutbDeliveryHeader", DeliveryDocument)
+func (c *SAPAPICaller) Header(deliveryDocument string) {
+	data, err := c.callOutboundDeliverySrvAPIRequirementHeader("A_OutbDeliveryHeader", deliveryDocument)
 	if err != nil {
 		c.log.Error(err)
 		return
 	}
-
-	c.log.Info(res)
-
+	c.log.Info(data)
 }
 
-func (c *SAPAPICaller) PartnerFunction(DeliveryDocument, PartnerFunction string) {
-	res, err := c.callOutboundDeliverySrvAPIRequirementPartnerFunction("A_OutbDeliveryHeader('{DeliveryDocument}')/to_DeliveryDocumentPartner", DeliveryDocument, PartnerFunction)
+func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementHeader(api, deliveryDocument string) (*sap_api_output_formatter.Header, error) {
+	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV;v=0002", api}, "/")
+	req, _ := http.NewRequest("GET", url, nil)
+
+	c.setHeaderAPIKeyAccept(req)
+	c.getQueryWithHeader(req, deliveryDocument)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToHeader(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) PartnerFunction(sDDocument, partnerFunction string) {
+	data, err := c.callOutboundDeliverySrvAPIRequirementPartnerFunction(fmt.Sprintf("A_OutbDeliveryHeader('%s')/to_DeliveryDocumentPartner", sDDocument), sDDocument, partnerFunction)
 	if err != nil {
 		c.log.Error(err)
 		return
 	}
-
-	c.log.Info(res)
-
+	c.log.Info(data)
 }
-func (c *SAPAPICaller) PartnerAddress(PartnerFunction, DeliveryDocument, AddressID string) {
-	res, err := c.callOutboundDeliverySrvAPIRequirementPartnerAddress("/A_OutbDeliveryPartner(PartnerFunction='{PartnerFunction}',SDDocument='{SDDocument}')/to_Address", PartnerFunction, DeliveryDocument, AddressID)
+
+func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementPartnerFunction(api, sDDocument, partnerFunction string) (*sap_api_output_formatter.PartnerFunction, error) {
+	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV;v=0002", api}, "/")
+	req, _ := http.NewRequest("GET", url, nil)
+
+	c.setHeaderAPIKeyAccept(req)
+	c.getQueryWithPartnerFunction(req, sDDocument, partnerFunction)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToPartnerFunction(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) PartnerAddress(partnerFunction, sDDocument string) {
+	data, err := c.callOutboundDeliverySrvAPIRequirementPartnerAddress(fmt.Sprintf("A_OutbDeliveryPartner(PartnerFunction='%s',SDDocument='%s')/to_Address2", partnerFunction, sDDocument), partnerFunction, sDDocument)
 	if err != nil {
 		c.log.Error(err)
 		return
 	}
-
-	c.log.Info(res)
-
+	c.log.Info(data)
 }
 
-func (c *SAPAPICaller) Item(DeliveryDocument, DeliveryDocumentItem string) {
-	res, err := c.callOutboundDeliverySrvAPIRequirementItem("A_OutbDeliveryItem", DeliveryDocument, DeliveryDocumentItem)
+func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementPartnerAddress(api, partnerFunction, sDDocument string) (*sap_api_output_formatter.PartnerAddress, error) {
+	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV;v=0002", api}, "/")
+	req, _ := http.NewRequest("GET", url, nil)
+
+	c.setHeaderAPIKeyAccept(req)
+//	c.getQueryWithPartnerAddress(req, partnerFunction, sDDocument)
+
+	resp, err := new(http.Client).Do(req)
+	if err != nil {
+		return nil, xerrors.Errorf("API request error: %w", err)
+	}
+	defer resp.Body.Close()
+
+	byteArray, _ := ioutil.ReadAll(resp.Body)
+	data, err := sap_api_output_formatter.ConvertToPartnerAddress(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
+}
+
+func (c *SAPAPICaller) Item(deliveryDocument, deliveryDocumentItem string) {
+	data, err := c.callOutboundDeliverySrvAPIRequirementItem("A_OutbDeliveryItem", deliveryDocument, deliveryDocumentItem)
 	if err != nil {
 		c.log.Error(err)
 		return
 	}
-
-	c.log.Info(res)
-
-
-func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementHeader(api, DeliveryDocument string) ([]byte, error) {
-	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV", api}, "/")
-	req, _ := http.NewRequest("GET", url, nil)
-
-	params := req.URL.Query()
-	// params.Add("$select", "DeliveryDocument")
-	params.Add("$filter", fmt.Sprintf("DeliveryDocument eq '%s'", DeliveryDocument))
-	req.URL.RawQuery = params.Encode()
-
-	req.Header.Set("APIKey", c.apiKey)
-	req.Header.Set("Accept", "application/json")
-
-	client := new(http.Client)
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	byteArray, _ := ioutil.ReadAll(resp.Body)
-	return byteArray, nil
+	c.log.Info(data)
 }
 
-func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementPartnerFunction(api, DeliveryDocument, PartnerFunction string) ([]byte, error) {
-	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV", api}, "/")
+func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementItem(api, deliveryDocument, deliveryDocumentItem string) (*sap_api_output_formatter.Item, error) {
+	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV;v=0002", api}, "/")
 	req, _ := http.NewRequest("GET", url, nil)
 
-	params := req.URL.Query()
-	// params.Add("$select", "DeliveryDocument, PartnerFunction")
-	params.Add("$filter", fmt.Sprintf("DeliveryDocument eq '%s' and PartnerFunction eq 'SH'", DeliveryDocument, PartnerFunction))
-	req.URL.RawQuery = params.Encode()
+	c.setHeaderAPIKeyAccept(req)
+	c.getQueryWithItem(req, deliveryDocument, deliveryDocumentItem)
 
-	req.Header.Set("APIKey", c.apiKey)
-	req.Header.Set("Accept", "application/json")
-
-	client := new(http.Client)
-	resp, err := client.Do(req)
+	resp, err := new(http.Client).Do(req)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("API request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	byteArray, _ := ioutil.ReadAll(resp.Body)
-	return byteArray, nil
+	data, err := sap_api_output_formatter.ConvertToItem(byteArray, c.log)
+	if err != nil {
+		return nil, xerrors.Errorf("convert error: %w", err)
+	}
+	return data, nil
 }
 
-func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementPartnerAddress(api, PartnerFunction, DeliveryDocument, AddressID string) ([]byte, error) {
-	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV", api}, "/")
-	req, _ := http.NewRequest("GET", url, nil)
-
-	params := req.URL.Query()
-	// params.Add("$select", "PartnerFunction, DeliveryDocument, AddressID")
-	params.Add("$filter", fmt.Sprintf("PartnerFunction eq 'SH' and DeliveryDocument eq '%s' and AddressID eq '%s'", PartnerFunction, DeliveryDocument, AddressID))
-	req.URL.RawQuery = params.Encode()
-
+func (c *SAPAPICaller) setHeaderAPIKeyAccept(req *http.Request) {
 	req.Header.Set("APIKey", c.apiKey)
 	req.Header.Set("Accept", "application/json")
-
-	client := new(http.Client)
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	byteArray, _ := ioutil.ReadAll(resp.Body)
-	return byteArray, nil
 }
 
-func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementItem(api, DeliveryDocument, DeliveryDocumentItem string) ([]byte, error) {
-	url := strings.Join([]string{c.baseURL, "API_OUTBOUND_DELIVERY_SRV", api}, "/")
-	req, _ := http.NewRequest("GET", url, nil)
-
+func (c *SAPAPICaller) getQueryWithHeader(req *http.Request, deliveryDocument string) {
 	params := req.URL.Query()
-	// params.Add("$select", "DeliveryDocument, DeliveryDocumentItem")
-	params.Add("$filter", fmt.Sprintf("DeliveryDocument eq '%s' and DeliveryDocumentItem eq '%s'", DeliveryDocument, DeliveryDocumentItem))
+	params.Add("$filter", fmt.Sprintf("DeliveryDocument eq '%s'", deliveryDocument))
 	req.URL.RawQuery = params.Encode()
+}
 
-	req.Header.Set("APIKey", c.apiKey)
-	req.Header.Set("Accept", "application/json")
+func (c *SAPAPICaller) getQueryWithPartnerFunction(req *http.Request, sDDocument, partnerFunction string) {
+	params := req.URL.Query()
+	params.Add("$filter", fmt.Sprintf("SDDocument eq '%s' and PartnerFunction eq '%s'", sDDocument, partnerFunction))
+	req.URL.RawQuery = params.Encode()
+}
 
-	client := new(http.Client)
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+//func (c *SAPAPICaller) getQueryWithPartnerAddress(req *http.Request, partnerFunction, sDDocument string) {
+//	params := req.URL.Query()
+//	params.Add("$filter", fmt.Sprintf("PartnerFunction eq '%s' and SDDocument eq '%s'", partnerFunction, sDDocument))
+//	req.URL.RawQuery = params.Encode()
+//}
 
-	byteArray, _ := ioutil.ReadAll(resp.Body)
-	return byteArray, nil
+func (c *SAPAPICaller) getQueryWithItem(req *http.Request, deliveryDocument, deliveryDocumentItem string) {
+	params := req.URL.Query()
+	params.Add("$filter", fmt.Sprintf("DeliveryDocument eq '%s' and DeliveryDocumentItem eq '%s'", deliveryDocument, deliveryDocumentItem))
+	req.URL.RawQuery = params.Encode()
 }

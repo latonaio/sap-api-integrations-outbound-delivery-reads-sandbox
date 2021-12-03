@@ -1,0 +1,10 @@
+{
+	"Customer": "17100001",
+	"PartnerFunction": "SP",
+	"SDDocument": "80000000",
+	"Supplier": "",
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L88",
+	"function": "sap-api-integrations-outbound-delivery-reads/SAP_API_Caller.(*SAPAPICaller).PartnerFunction",
+	"level": "INFO",
+	"time": "2021-12-03T15:07:31.84203+09:00"
+}

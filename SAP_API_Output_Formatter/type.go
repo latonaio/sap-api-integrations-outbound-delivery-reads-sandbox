@@ -16,8 +16,8 @@ type Header struct {
 	DocumentDate                  string `json:"DocumentDate"`
 	ActualGoodsMovementDate       string `json:"ActualGoodsMovementDate"`
 	ActualDeliveryRoute           string `json:"ActualDeliveryRoute"`
-	Shippinglocationtimezone      string `json:"Shippinglocationtimezone"`
-	Receivinglocationtimezone     string `json:"Receivinglocationtimezone"`
+    Shippinglocationtimezone      string `json:"Shippinglocationtimezone"`
+    Receivinglocationtimezone     string `json:"Receivinglocationtimezone"`
 	ActualGoodsMovementTime       string `json:"ActualGoodsMovementTime"`
 	BillingDocumentDate           string `json:"BillingDocumentDate"`
 	CompleteDeliveryIsDefined     bool   `json:"CompleteDeliveryIsDefined"`
@@ -40,7 +40,7 @@ type Header struct {
 	HeaderVolumeUnit              string `json:"HeaderVolumeUnit"`
 	HeaderWeightUnit              string `json:"HeaderWeightUnit"`
 	IncotermsClassification       string `json:"IncotermsClassification"`
-	IsExportDelivery              bool   `json:"IsExportDelivery"`
+	IsExportDelivery              string `json:"IsExportDelivery"`
 	LastChangeDate                string `json:"LastChangeDate"`
 	LoadingDate                   string `json:"LoadingDate"`
 	LoadingPoint                  string `json:"LoadingPoint"`
@@ -96,7 +96,7 @@ type Item struct {
 	ItemGrossWeight                string `json:"ItemGrossWeight"`
 	ItemNetWeight                  string `json:"ItemNetWeight"`
 	ItemWeightUnit                 string `json:"ItemWeightUnit"`
-	ItemIsBillingRelevant          bool   `json:"ItemIsBillingRelevant"`
+	ItemIsBillingRelevant          string `json:"ItemIsBillingRelevant"`
 	ItemPackingIncompletionStatus  string `json:"ItemPackingIncompletionStatus"`
 	ItemPickingIncompletionStatus  string `json:"ItemPickingIncompletionStatus"`
 	ItemVolume                     string `json:"ItemVolume"`
@@ -105,12 +105,12 @@ type Item struct {
 	Material                       string `json:"Material"`
 	MaterialByCustomer             string `json:"MaterialByCustomer"`
 	MaterialFreightGroup           string `json:"MaterialFreightGroup"`
-	NumberOfSerialNumbers          string `json:"NumberOfSerialNumbers"`
+	NumberOfSerialNumbers          int    `json:"NumberOfSerialNumbers"`
 	OrderID                        string `json:"OrderID"`
 	OrderItem                      string `json:"OrderItem"`
 	OriginalDeliveryQuantity       string `json:"OriginalDeliveryQuantity"`
 	PackingStatus                  string `json:"PackingStatus"`
-	PartialDeliveryIsAllowed       bool   `json:"PartialDeliveryIsAllowed"`
+	PartialDeliveryIsAllowed       string `json:"PartialDeliveryIsAllowed"`
 	PickingConfirmationStatus      string `json:"PickingConfirmationStatus"`
 	PickingStatus                  string `json:"PickingStatus"`
 	Plant                          string `json:"Plant"`
@@ -122,25 +122,23 @@ type Item struct {
 }
 
 type PartnerFunction struct {
-	DeliveryDocument     string `json:"DeliveryDocument"`
+	SDDocument           string `json:"SDDocument"`
 	PartnerFunction      string `json:"PartnerFunction"`
 	Customer             string `json:"Customer"`
 	Supplier             string `json:"Supplier"`
-	BusinessPartnerName1 string `json:"BusinessPartnerName1"`
 }
 
 type PartnerAddress struct {
 	DeliveryDocument       string `json:"DeliveryDocument"`
 	PartnerFunction        string `json:"PartnerFunction"`
 	AddressID              string `json:"AddressID"`
+	BusinessPartnerName1   string `json:"BusinessPartnerName1"`
 	Country                string `json:"Country"`
 	Region                 string `json:"Region"`
 	StreetName             string `json:"StreetName"`
 	CityName               string `json:"CityName"`
 	PostalCode             string `json:"PostalCode"`
 	CorrespondenceLanguage string `json:"CorrespondenceLanguage"`
-	EmailAddress           string `json:"EmailAddress"`
 	FaxNumber              string `json:"FaxNumber"`
-	MobilePhoneNumber      string `json:"MobilePhoneNumber"`
 	PhoneNumber            string `json:"PhoneNumber"`
 }
