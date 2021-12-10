@@ -183,6 +183,7 @@ type SDC struct {
 		} `json:"PartnerFunction"`
 	} `json:"DeliveryDocument"`
 	APISchema        string `json:"api_schema"`
+	Accepter     []string `json:"accepter"`
 	SDDocument       string `json:"delivery_document"`
 	Deleted          bool   `json:"deleted"`
 }

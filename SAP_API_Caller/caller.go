@@ -26,26 +26,36 @@ func NewSAPAPICaller(baseUrl string, l *logger.Logger) *SAPAPICaller {
 	}
 }
 
-func (c *SAPAPICaller) AsyncGetOutboundDelivery(deliveryDocument, sDDocument, partnerFunction, deliveryDocumentItem string) {
+func (c *SAPAPICaller) AsyncGetOutboundDelivery(deliveryDocument, sDDocument, partnerFunction, deliveryDocumentItem string, accepter []string) {
 	wg := &sync.WaitGroup{}
+	wg.Add(len(accepter))
+	for _, fn := range accepter {
+		switch fn {
+		case "Header":
+			func() {
+				c.Header(deliveryDocument)
+				wg.Done()
+			}()
+		case "PartnerFunction":
+			func() {
+				c.PartnerFunction(sDDocument, partnerFunction)
+				wg.Done()
+			}()
+		case "PartnerAddress":
+			func() {
+				c.PartnerAddress(partnerFunction, sDDocument)
+				wg.Done()
+			}()
+		case "Item":
+			func() {
+				c.Item(deliveryDocument, deliveryDocumentItem)
+				wg.Done()
+			}()
+		default:
+			wg.Done()
+		}
+	}
 
-	wg.Add(4)
-	func() {
-		c.Header(deliveryDocument)
-		wg.Done()
-	}()
-	func() {
-		c.PartnerFunction(sDDocument, partnerFunction)
-		wg.Done()
-	}()
-	func() {
-		c.PartnerAddress(partnerFunction, sDDocument)
-		wg.Done()
-	}()
-	func() {
-		c.Item(deliveryDocument, deliveryDocumentItem)
-		wg.Done()
-	}()
 	wg.Wait()
 }
 
@@ -123,7 +133,7 @@ func (c *SAPAPICaller) callOutboundDeliverySrvAPIRequirementPartnerAddress(api, 
 	req, _ := http.NewRequest("GET", url, nil)
 
 	c.setHeaderAPIKeyAccept(req)
-//	c.getQueryWithPartnerAddress(req, partnerFunction, sDDocument)
+	//	c.getQueryWithPartnerAddress(req, partnerFunction, sDDocument)
 
 	resp, err := new(http.Client).Do(req)
 	if err != nil {
