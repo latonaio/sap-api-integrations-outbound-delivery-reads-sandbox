@@ -1,6 +1,6 @@
 package responses
 
-type Item struct {
+type ToItem struct {
 	D struct {
 		Results []struct {
 			Metadata struct {

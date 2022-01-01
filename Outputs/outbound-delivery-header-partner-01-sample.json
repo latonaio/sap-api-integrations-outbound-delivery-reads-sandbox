@@ -1,0 +1,17 @@
+{
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L203",
+	"function": "sap-api-integrations-outbound-delivery-reads/SAP_API_Caller.(*SAPAPICaller).HeaderPartner",
+	"level": "INFO",
+	"message": [
+		{
+			"AddressID": "22900",
+			"Customer": "17100001",
+			"PartnerFunction": "SH",
+			"SDDocument": "80000000",
+			"SDDocumentItem": "000000",
+			"Supplier": "",
+			"to_Address": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=0002/A_OutbDeliveryPartner(PartnerFunction='SH',SDDocument='80000000')/to_Address"
+		}
+	],
+	"time": "2022-01-01T13:38:13.079443+09:00"
+}

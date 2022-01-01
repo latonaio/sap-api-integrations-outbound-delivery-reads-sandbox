@@ -64,6 +64,16 @@ type Header struct {
 			TransportationGroup           string `json:"TransportationGroup"`
 			TransportationPlanningDate    string `json:"TransportationPlanningDate"`
 			TransportationPlanningTime    string `json:"TransportationPlanningTime"`
+			ToHeaderPartner struct {
+				Deferred struct {
+					URI string `json:"uri"`
+				} `json:"__deferred"`
+			} `json:"to_DeliveryDocumentPartner"`
+			ToItem struct {
+				Deferred struct {
+					URI string `json:"uri"`
+				} `json:"__deferred"`
+			} `json:"to_DeliveryDocumentItem"`
 		} `json:"results"`
 	} `json:"d"`
 }

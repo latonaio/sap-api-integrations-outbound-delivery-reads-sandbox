@@ -25,7 +25,12 @@ sap-api-integrations-outbound-delivery-reads が対応する APIサービス は
 sap-api-integrations-outbound-delivery-reads には、次の API をコールするためのリソースが含まれています。  
 
 * A_OutbDeliveryHeader（出荷伝票 - ヘッダ）
+* ToHeaderPartner（出荷伝票 - 取引先機能 ※To）  
+* ToPartnerAddress（出荷伝票 - 取引先アドレス ※To）
+* ToItem（出荷伝票 - 明細 ※To）
+* ToItemDocumentFlow（出荷伝票 - 明細伝票フロー ※To）
 * A_OutbDeliveryHeader('{DeliveryDocument}')/to_DeliveryDocumentPartner（出荷伝票 - 取引先機能）
+* ToPartnerAddress（出荷伝票 - 取引先アドレス ※To）
 * A_OutbDeliveryPartner(PartnerFunction='{PartnerFunction}',SDDocument='{SDDocument}')/to_Address2（出荷伝票 - 取引先アドレス）
 * A_OutbDeliveryItem（出荷伝票 - 明細）
 
@@ -35,8 +40,8 @@ sap-api-integrations-outbound-delivery-reads において、API への値入力�
 ### SDC レイアウト
 
 * inoutSDC.OutboundDelivery.DeliveryDocument（出荷伝票）
-* inoutSDC.SDDocument（販売伝票 ※出荷伝票の取引先機能関連のAPIをコールするときに出荷伝票ではなく販売伝票としての項目値が必要です。通常は、出荷伝票の値＝販売伝票の値、となります）
-* inoutSDC.OutboundDelivery.PartnerFunction.PartnerFunction（取引先機能）
+* inoutSDC.OutboundDelivery.HeaderPartner.SDDocument（販売伝票 ※出荷伝票の取引先機能関連のAPIをコールするときに出荷伝票ではなく販売伝票としての項目値が必要です。通常は、出荷伝票の値＝販売伝票の値、となります）  
+* inoutSDC.OutboundDelivery.HeaderPartner.PartnerFunction（取引先機能）
 * inoutSDC.OutboundDelivery.DeliveryDocumentItem.DeliveryDocumentItem（出荷伝票明細）
 
 ## SAP API Bussiness Hub の API の選択的コール
@@ -73,7 +78,7 @@ accepter における データ種別 の指定に基づいて SAP_API_Caller �
 caller.go の func() 毎 の 以下の箇所が、指定された API をコールするソースコードです。  
 
 ```
-func (c *SAPAPICaller) AsyncGetOutboundDelivery(deliveryDocument, sDDocument, partnerFunction, deliveryDocumentItem string, accepter []string) {
+func (c *SAPAPICaller) AsyncGetOutboundDelivery(deliveryDocument, sDDocument, partnerFunction, deliveryDocumentItem, precedingDocument, precedingDocumentItem string, accepter []string) {
 	wg := &sync.WaitGroup{}
 	wg.Add(len(accepter))
 	for _, fn := range accepter {
@@ -83,9 +88,9 @@ func (c *SAPAPICaller) AsyncGetOutboundDelivery(deliveryDocument, sDDocument, pa
 				c.Header(deliveryDocument)
 				wg.Done()
 			}()
-		case "PartnerFunction":
+		case "HeaderPartner":
 			func() {
-				c.PartnerFunction(sDDocument, partnerFunction)
+				c.HeaderPartner(sDDocument, partnerFunction)
 				wg.Done()
 			}()
 		case "PartnerAddress":
@@ -170,69 +175,75 @@ type PartnerAddress struct {
 ## Output  
 本マイクロサービスでは、[golang-logging-library](https://github.com/latonaio/golang-logging-library) により、以下のようなデータがJSON形式で出力されます。  
 以下の sample.json の例は、SAP 出荷伝票 の ヘッダデータ が取得された結果の JSON の例です。  
-以下の項目のうち、"ActualDeliveryRoute" ～ "TransportationPlanningTime" は、/SAP_API_Output_Formatter/type.go 内 の Type Header {} による出力結果です。"cursor" ～ "time"は、golang-logging-library による 定型フォーマットの出力結果です。  
+以下の項目のうち、"DeliveryDocument" ～ "to_DeliveryDocumentItem" は、/SAP_API_Output_Formatter/type.go 内 の Type Header {} による出力結果です。"cursor" ～ "time"は、golang-logging-library による 定型フォーマットの出力結果です。  
 
 ```
 {
-	"ActualDeliveryRoute": "TR0002",
-	"ActualGoodsMovementDate": "/Date(1471392000000)/",
-	"ActualGoodsMovementTime": "PT00H00M00S",
-	"BillingDocumentDate": "/Date(1471392000000)/",
-	"CompleteDeliveryIsDefined": false,
-	"ConfirmationTime": "PT00H00M00S",
-	"CreationDate": "/Date(1471392000000)/",
-	"CreationTime": "PT15H21M06S",
-	"CustomerGroup": "01",
-	"DeliveryBlockReason": "",
-	"DeliveryDate": "/Date(1471564800000)/",
-	"DeliveryDocument": "80000000",
-	"DeliveryDocumentBySupplier": "",
-	"DeliveryDocumentType": "LF",
-	"DeliveryIsInPlant": false,
-	"DeliveryPriority": "00",
-	"DeliveryTime": "PT00H00M00S",
-	"DocumentDate": "/Date(1471392000000)/",
-	"GoodsIssueOrReceiptSlipNumber": "",
-	"GoodsIssueTime": "PT00H00M00S",
-	"HeaderBillingBlockReason": "",
-	"HeaderGrossWeight": "3.000",
-	"HeaderNetWeight": "2.700",
-	"HeaderVolume": "0.000",
-	"HeaderVolumeUnit": "",
-	"HeaderWeightUnit": "G",
-	"IncotermsClassification": "EXW",
-	"IsExportDelivery": "",
-	"LastChangeDate": "",
-	"LoadingDate": "/Date(1471392000000)/",
-	"LoadingPoint": "",
-	"LoadingTime": "PT00H00M00S",
-	"MeansOfTransport": "",
-	"OrderCombinationIsAllowed": false,
-	"OrderID": "",
-	"OverallDelivConfStatus": "",
-	"OverallDelivReltdBillgStatus": "C",
-	"OverallGoodsMovementStatus": "C",
-	"OverallPackingStatus": "",
-	"OverallPickingConfStatus": "",
-	"OverallPickingStatus": "C",
-	"PickingDate": "/Date(1471305600000)/",
-	"PickingTime": "PT00H00M00S",
-	"PlannedGoodsIssueDate": "/Date(1471392000000)/",
-	"ReceivingPlant": "",
-	"Receivinglocationtimezone": "EST",
-	"ShipToParty": "17100001",
-	"ShippingCondition": "01",
-	"ShippingPoint": "1710",
-	"ShippingType": "",
-	"Shippinglocationtimezone": "PST",
-	"SoldToParty": "17100001",
-	"Supplier": "",
-	"TransportationGroup": "0001",
-	"TransportationPlanningDate": "/Date(1471392000000)/",
-	"TransportationPlanningTime": "PT00H00M00S",
-	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L58",
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L73",
 	"function": "sap-api-integrations-outbound-delivery-reads/SAP_API_Caller.(*SAPAPICaller).Header",
 	"level": "INFO",
-	"time": "2021-12-03T11:10:30.956076+09:00"
+	"message": [
+		{
+			"DeliveryDocument": "80000000",
+			"DeliveryDocumentType": "LF",
+			"DocumentDate": "/Date(1471392000000)/",
+			"ActualGoodsMovementDate": "/Date(1471392000000)/",
+			"ActualDeliveryRoute": "TR0002",
+			"Shippinglocationtimezone": "PST",
+			"Receivinglocationtimezone": "EST",
+			"ActualGoodsMovementTime": "PT07H00M00S",
+			"BillingDocumentDate": "/Date(1471392000000)/",
+			"CompleteDeliveryIsDefined": false,
+			"ConfirmationTime": "PT00H00M00S",
+			"CreationDate": "/Date(1471392000000)/",
+			"CreationTime": "PT08H21M06S",
+			"CustomerGroup": "01",
+			"DeliveryBlockReason": "",
+			"DeliveryDate": "/Date(1471564800000)/",
+			"DeliveryDocumentBySupplier": "",
+			"DeliveryIsInPlant": false,
+			"DeliveryPriority": "00",
+			"DeliveryTime": "PT04H00M00S",
+			"GoodsIssueOrReceiptSlipNumber": "",
+			"GoodsIssueTime": "PT07H00M00S",
+			"HeaderBillingBlockReason": "",
+			"HeaderGrossWeight": "3.000",
+			"HeaderNetWeight": "2.700",
+			"HeaderVolume": "0.000",
+			"HeaderVolumeUnit": "",
+			"HeaderWeightUnit": "G",
+			"IncotermsClassification": "EXW",
+			"IsExportDelivery": "",
+			"LastChangeDate": "",
+			"LoadingDate": "/Date(1471392000000)/",
+			"LoadingPoint": "",
+			"LoadingTime": "PT07H00M00S",
+			"MeansOfTransport": "",
+			"OrderCombinationIsAllowed": false,
+			"OrderID": "",
+			"OverallDelivConfStatus": "",
+			"OverallDelivReltdBillgStatus": "C",
+			"OverallGoodsMovementStatus": "C",
+			"OverallPackingStatus": "",
+			"OverallPickingConfStatus": "",
+			"OverallPickingStatus": "C",
+			"PickingDate": "/Date(1471305600000)/",
+			"PickingTime": "PT07H00M00S",
+			"PlannedGoodsIssueDate": "/Date(1471392000000)/",
+			"ReceivingPlant": "",
+			"ShippingCondition": "01",
+			"ShippingPoint": "1710",
+			"ShippingType": "",
+			"ShipToParty": "17100001",
+			"SoldToParty": "17100001",
+			"Supplier": "",
+			"TransportationGroup": "0001",
+			"TransportationPlanningDate": "/Date(1471392000000)/",
+			"TransportationPlanningTime": "PT07H00M00S",
+			"to_DeliveryDocumentPartner": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=0002/A_OutbDeliveryHeader('80000000')/to_DeliveryDocumentPartner",
+			"to_DeliveryDocumentItem": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=0002/A_OutbDeliveryHeader('80000000')/to_DeliveryDocumentItem"
+		}
+	],
+	"time": "2021-12-31T18:04:17.677966+09:00"
 }
 ```
