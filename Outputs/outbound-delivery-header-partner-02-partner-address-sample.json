@@ -1,5 +1,5 @@
 {
-	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L210",
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L205",
 	"function": "sap-api-integrations-outbound-delivery-reads/SAP_API_Caller.(*SAPAPICaller).HeaderPartner",
 	"level": "INFO",
 	"message": {
@@ -16,5 +16,5 @@
 		"FaxNumber": "",
 		"PhoneNumber": "999 555 6721"
 	},
-	"time": "2022-01-01T13:38:13.46434+09:00"
+	"time": "2022-01-27T22:50:32+09:00"
 }

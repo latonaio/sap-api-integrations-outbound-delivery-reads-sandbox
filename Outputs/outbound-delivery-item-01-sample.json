@@ -1,5 +1,5 @@
 {
-	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L288",
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L283",
 	"function": "sap-api-integrations-outbound-delivery-reads/SAP_API_Caller.(*SAPAPICaller).Item",
 	"level": "INFO",
 	"message": [
@@ -11,7 +11,7 @@
 			"Batch": "",
 			"BatchBySupplier": "",
 			"CostCenter": "",
-			"CreationDate": "/Date(1471392000000)/",
+			"CreationDate": "2016-08-17T09:00:00+09:00",
 			"CreationTime": "PT08H21M06S",
 			"DeliveryDocumentItemCategory": "TAN",
 			"DeliveryDocumentItemText": "Trad.Good 11,PD,Reg.Trading",
@@ -48,7 +48,7 @@
 			"PickingConfirmationStatus": "",
 			"PickingStatus": "C",
 			"Plant": "1710",
-			"ProductAvailabilityDate": "/Date(1471392000000)/",
+			"ProductAvailabilityDate": "2016-08-17T09:00:00+09:00",
 			"ProductAvailabilityTime": "PT15H21M06S",
 			"ProfitCenter": "YB700",
 			"StorageLocation": "171A",
@@ -56,5 +56,5 @@
 			"to_DocumentFlow": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=0002/A_OutbDeliveryItem(DeliveryDocument='80000000',DeliveryDocumentItem='000010')/to_DocumentFlow"
 		}
 	],
-	"time": "2022-01-01T13:45:42.798372+09:00"
+	"time": "2022-01-27T22:49:06+09:00"
 }

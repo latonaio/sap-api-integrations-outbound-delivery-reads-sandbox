@@ -173,33 +173,33 @@ type PartnerAddress struct {
 このように、v1.X.X のバージョンである API サービス の データレイアウトと、v2.X.X のバージョンである API サービス の データレイアウトは、Results の配列構造を持っているか持っていないかという点が異なります。  
 
 ## Output  
-本マイクロサービスでは、[golang-logging-library](https://github.com/latonaio/golang-logging-library) により、以下のようなデータがJSON形式で出力されます。  
+本マイクロサービスでは、[golang-logging-library-for-sap](https://github.com/latonaio/golang-logging-library-for-sap) により、以下のようなデータがJSON形式で出力されます。  
 以下の sample.json の例は、SAP 出荷伝票 の ヘッダデータ が取得された結果の JSON の例です。  
-以下の項目のうち、"DeliveryDocument" ～ "to_DeliveryDocumentItem" は、/SAP_API_Output_Formatter/type.go 内 の Type Header {} による出力結果です。"cursor" ～ "time"は、golang-logging-library による 定型フォーマットの出力結果です。  
+以下の項目のうち、"DeliveryDocument" ～ "to_DeliveryDocumentItem" は、/SAP_API_Output_Formatter/type.go 内 の Type Header {} による出力結果です。"cursor" ～ "time"は、golang-logging-library-for-sap による 定型フォーマットの出力結果です。  
 
 ```
 {
-	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L73",
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L68",
 	"function": "sap-api-integrations-outbound-delivery-reads/SAP_API_Caller.(*SAPAPICaller).Header",
 	"level": "INFO",
 	"message": [
 		{
 			"DeliveryDocument": "80000000",
 			"DeliveryDocumentType": "LF",
-			"DocumentDate": "/Date(1471392000000)/",
-			"ActualGoodsMovementDate": "/Date(1471392000000)/",
+			"DocumentDate": "2016-08-17T09:00:00+09:00",
+			"ActualGoodsMovementDate": "2016-08-17T09:00:00+09:00",
 			"ActualDeliveryRoute": "TR0002",
 			"Shippinglocationtimezone": "PST",
 			"Receivinglocationtimezone": "EST",
 			"ActualGoodsMovementTime": "PT07H00M00S",
-			"BillingDocumentDate": "/Date(1471392000000)/",
+			"BillingDocumentDate": "2016-08-17T09:00:00+09:00",
 			"CompleteDeliveryIsDefined": false,
 			"ConfirmationTime": "PT00H00M00S",
-			"CreationDate": "/Date(1471392000000)/",
+			"CreationDate": "2016-08-17T09:00:00+09:00",
 			"CreationTime": "PT08H21M06S",
 			"CustomerGroup": "01",
 			"DeliveryBlockReason": "",
-			"DeliveryDate": "/Date(1471564800000)/",
+			"DeliveryDate": "2016-08-19T09:00:00+09:00",
 			"DeliveryDocumentBySupplier": "",
 			"DeliveryIsInPlant": false,
 			"DeliveryPriority": "00",
@@ -215,7 +215,7 @@ type PartnerAddress struct {
 			"IncotermsClassification": "EXW",
 			"IsExportDelivery": "",
 			"LastChangeDate": "",
-			"LoadingDate": "/Date(1471392000000)/",
+			"LoadingDate": "2016-08-17T09:00:00+09:00",
 			"LoadingPoint": "",
 			"LoadingTime": "PT07H00M00S",
 			"MeansOfTransport": "",
@@ -227,9 +227,9 @@ type PartnerAddress struct {
 			"OverallPackingStatus": "",
 			"OverallPickingConfStatus": "",
 			"OverallPickingStatus": "C",
-			"PickingDate": "/Date(1471305600000)/",
+			"PickingDate": "2016-08-16T09:00:00+09:00",
 			"PickingTime": "PT07H00M00S",
-			"PlannedGoodsIssueDate": "/Date(1471392000000)/",
+			"PlannedGoodsIssueDate": "2016-08-17T09:00:00+09:00",
 			"ReceivingPlant": "",
 			"ShippingCondition": "01",
 			"ShippingPoint": "1710",
@@ -238,12 +238,12 @@ type PartnerAddress struct {
 			"SoldToParty": "17100001",
 			"Supplier": "",
 			"TransportationGroup": "0001",
-			"TransportationPlanningDate": "/Date(1471392000000)/",
+			"TransportationPlanningDate": "2016-08-17T09:00:00+09:00",
 			"TransportationPlanningTime": "PT07H00M00S",
 			"to_DeliveryDocumentPartner": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=0002/A_OutbDeliveryHeader('80000000')/to_DeliveryDocumentPartner",
 			"to_DeliveryDocumentItem": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_OUTBOUND_DELIVERY_SRV;v=0002/A_OutbDeliveryHeader('80000000')/to_DeliveryDocumentItem"
 		}
 	],
-	"time": "2021-12-31T18:04:17.677966+09:00"
+	"time": "2022-01-27T22:51:12+09:00"
 }
 ```
