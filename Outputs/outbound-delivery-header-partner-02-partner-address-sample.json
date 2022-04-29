@@ -1,0 +1,20 @@
+{
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L205",
+	"function": "sap-api-integrations-outbound-delivery-reads/SAP_API_Caller.(*SAPAPICaller).HeaderPartner",
+	"level": "INFO",
+	"message": {
+		"DeliveryDocument": "",
+		"PartnerFunction": "",
+		"AddressID": "22900",
+		"BusinessPartnerName1": "Domestic US Customer 1",
+		"Country": "US",
+		"Region": "GA",
+		"StreetName": "Augusta Ave SE",
+		"CityName": "Atlanta",
+		"PostalCode": "30315-1402",
+		"CorrespondenceLanguage": "EN",
+		"FaxNumber": "",
+		"PhoneNumber": "999 555 6721"
+	},
+	"time": "2022-01-27T22:50:32+09:00"
+}

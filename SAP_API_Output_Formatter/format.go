@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/responses"
 
-	"github.com/latonaio/golang-logging-library/logger"
+	"github.com/latonaio/golang-logging-library-for-sap/logger"
 	"golang.org/x/xerrors"
 )
 
-func ConvertToHeader(raw []byte, l *logger.Logger) (*Header, error) {
+func ConvertToHeader(raw []byte, l *logger.Logger) ([]Header, error) {
 	pm := &responses.Header{}
 
 	err := json.Unmarshal(raw, pm)
@@ -18,12 +18,14 @@ func ConvertToHeader(raw []byte, l *logger.Logger) (*Header, error) {
 	if len(pm.D.Results) == 0 {
 		return nil, xerrors.New("Result data is not exist")
 	}
-	if len(pm.D.Results) > 1 {
-		l.Info("raw data has too many Results. %d Results exist. expected only 1 Result. Use the first of Results array", len(pm.D.Results))
+	if len(pm.D.Results) > 10 {
+		l.Info("raw data has too many Results. %d Results exist. show the first 10 of Results array", len(pm.D.Results))
 	}
-	data := pm.D.Results[0]
 
-	return &Header{
+	header := make([]Header, 0, 10)
+	for i := 0; i < 10 && i < len(pm.D.Results); i++ {
+		data := pm.D.Results[i]
+		header = append(header, Header{
 		DeliveryDocument:              data.DeliveryDocument,
 		DeliveryDocumentType:          data.DeliveryDocumentType,
 		DocumentDate:                  data.DocumentDate,
@@ -80,30 +82,43 @@ func ConvertToHeader(raw []byte, l *logger.Logger) (*Header, error) {
 		TransportationGroup:           data.TransportationGroup,
 		TransportationPlanningDate:    data.TransportationPlanningDate,
 		TransportationPlanningTime:    data.TransportationPlanningTime,
-	}, nil
+		ToHeaderPartner:               data.ToHeaderPartner.Deferred.URI,
+		ToItem:                        data.ToItem.Deferred.URI,
+		})
+	}
+
+	return header, nil
 }
 
-func ConvertToPartnerFunction(raw []byte, l *logger.Logger) (*PartnerFunction, error) {
-	pm := &responses.PartnerFunction{}
+func ConvertToHeaderPartner(raw []byte, l *logger.Logger) ([]HeaderPartner, error) {
+	pm := &responses.HeaderPartner{}
 
 	err := json.Unmarshal(raw, pm)
 	if err != nil {
-		return nil, xerrors.Errorf("cannot convert to PartnerFunction. unmarshal error: %w", err)
+		return nil, xerrors.Errorf("cannot convert to HeaderPartner. unmarshal error: %w", err)
 	}
 	if len(pm.D.Results) == 0 {
 		return nil, xerrors.New("Result data is not exist")
 	}
-	if len(pm.D.Results) > 1 {
-		l.Info("raw data has too many Results. %d Results exist. expected only 1 Result. Use the first of Results array", len(pm.D.Results))
+	if len(pm.D.Results) > 10 {
+		l.Info("raw data has too many Results. %d Results exist. show the first 10 of Results array", len(pm.D.Results))
 	}
-	data := pm.D.Results[0]
 
-	return &PartnerFunction{
-		SDDocument:                    data.SDDocument,
-        PartnerFunction:               data.PartnerFunction,
-		Customer:                      data.Customer,
-		Supplier:                      data.Supplier,
-	}, nil
+	headerPartner := make([]HeaderPartner, 0, 10)
+	for i := 0; i < 10 && i < len(pm.D.Results); i++ {
+		data := pm.D.Results[i]
+		headerPartner = append(headerPartner, HeaderPartner{
+	AddressID:              data.AddressID,
+	Customer:               data.Customer,
+	PartnerFunction:        data.PartnerFunction,
+	SDDocument:             data.SDDocument,
+	SDDocumentItem:         data.SDDocumentItem,
+	Supplier:               data.Supplier,
+	ToPartnerAddress:       data.ToPartnerAddress.Deferred.URI,
+		})
+	}
+
+	return headerPartner, nil
 }
 
 func ConvertToPartnerAddress(raw []byte, l *logger.Logger) (*PartnerAddress, error) {
@@ -132,7 +147,7 @@ func ConvertToPartnerAddress(raw []byte, l *logger.Logger) (*PartnerAddress, err
 	}, nil
 }
 
-func ConvertToItem(raw []byte, l *logger.Logger) (*Item, error) {
+func ConvertToItem(raw []byte, l *logger.Logger) ([]Item, error) {
 	pm := &responses.Item{}
 
 	err := json.Unmarshal(raw, pm)
@@ -142,12 +157,14 @@ func ConvertToItem(raw []byte, l *logger.Logger) (*Item, error) {
 	if len(pm.D.Results) == 0 {
 		return nil, xerrors.New("Result data is not exist")
 	}
-	if len(pm.D.Results) > 1 {
-		l.Info("raw data has too many Results. %d Results exist. expected only 1 Result. Use the first of Results array", len(pm.D.Results))
+	if len(pm.D.Results) > 10 {
+		l.Info("raw data has too many Results. %d Results exist. show the first 10 of Results array", len(pm.D.Results))
 	}
-	data := pm.D.Results[0]
 
-	return &Item{
+	item := make([]Item, 0, 10)
+	for i := 0; i < 10 && i < len(pm.D.Results); i++ {
+		data := pm.D.Results[i]
+		item = append(item, Item{
 		DeliveryDocument:              data.DeliveryDocument,
         DeliveryDocumentItem:          data.DeliveryDocumentItem,
 		BaseUnit:                      data.BaseUnit,
@@ -197,5 +214,170 @@ func ConvertToItem(raw []byte, l *logger.Logger) (*Item, error) {
 		ProfitCenter:                  data.ProfitCenter,
 		StorageLocation:               data.StorageLocation,
 		TransportationGroup:           data.TransportationGroup,
+		ToItemDocumentFlow:            data.ToItemDocumentFlow.Deferred.URI,
+		})
+	}
+
+	return item, nil
+}
+
+func ConvertToToHeaderPartner(raw []byte, l *logger.Logger) ([]ToHeaderPartner, error) {
+	pm := &responses.ToHeaderPartner{}
+
+	err := json.Unmarshal(raw, pm)
+	if err != nil {
+		return nil, xerrors.Errorf("cannot convert to ToHeaderPartner. unmarshal error: %w", err)
+	}
+	if len(pm.D.Results) == 0 {
+		return nil, xerrors.New("Result data is not exist")
+	}
+	if len(pm.D.Results) > 10 {
+		l.Info("raw data has too many Results. %d Results exist. show the first 10 of Results array", len(pm.D.Results))
+	}
+
+	toHeaderPartner := make([]ToHeaderPartner, 0, 10)
+	for i := 0; i < 10 && i < len(pm.D.Results); i++ {
+		data := pm.D.Results[i]
+		toHeaderPartner = append(toHeaderPartner, ToHeaderPartner{
+	AddressID:              data.AddressID,
+	Customer:               data.Customer,
+	PartnerFunction:        data.PartnerFunction,
+	SDDocument:             data.SDDocument,
+	SDDocumentItem:         data.SDDocumentItem,
+	Supplier:               data.Supplier,
+	ToPartnerAddress:       data.ToPartnerAddress.Deferred.URI,
+		})
+	}
+
+	return toHeaderPartner, nil
+}
+
+func ConvertToToPartnerAddress(raw []byte, l *logger.Logger) (*ToPartnerAddress, error) {
+	pm := &responses.ToPartnerAddress{}
+
+	err := json.Unmarshal(raw, &pm)
+	if err != nil {
+		return nil, xerrors.Errorf("cannot convert to ToPartnerAddress. unmarshal error: %w", err)
+	}
+	
+	return &ToPartnerAddress{
+        AddressID:                     pm.D.AddressID, 
+        BusinessPartnerName1:          pm.D.BusinessPartnerName1,
+        Country:                       pm.D.Country,
+		Region:                        pm.D.Region,
+		StreetName:                    pm.D.StreetName,
+		CityName:                      pm.D.CityName,
+		PostalCode:                    pm.D.PostalCode,
+		CorrespondenceLanguage:        pm.D.CorrespondenceLanguage,
+		FaxNumber:                     pm.D.FaxNumber,
+		PhoneNumber:                   pm.D.PhoneNumber,
 	}, nil
+}
+
+func ConvertToToItem(raw []byte, l *logger.Logger) ([]ToItem, error) {
+	pm := &responses.ToItem{}
+
+	err := json.Unmarshal(raw, pm)
+	if err != nil {
+		return nil, xerrors.Errorf("cannot convert to ToItem. unmarshal error: %w", err)
+	}
+	if len(pm.D.Results) == 0 {
+		return nil, xerrors.New("Result data is not exist")
+	}
+	if len(pm.D.Results) > 10 {
+		l.Info("raw data has too many Results. %d Results exist. show the first 10 of Results array", len(pm.D.Results))
+	}
+
+	toItem := make([]ToItem, 0, 10)
+	for i := 0; i < 10 && i < len(pm.D.Results); i++ {
+		data := pm.D.Results[i]
+		toItem = append(toItem, ToItem{
+		DeliveryDocument:              data.DeliveryDocument,
+        DeliveryDocumentItem:          data.DeliveryDocumentItem,
+		BaseUnit:                      data.BaseUnit,
+		ActualDeliveryQuantity:        data.ActualDeliveryQuantity,
+		Batch:                         data.Batch,
+		BatchBySupplier:               data.BatchBySupplier,
+		CostCenter:                    data.CostCenter,
+		CreationDate:                  data.CreationDate,
+		CreationTime:                  data.CreationTime,
+		DeliveryDocumentItemCategory:  data.DeliveryDocumentItemCategory,
+		DeliveryDocumentItemText:      data.DeliveryDocumentItemText,
+		DeliveryQuantityUnit:          data.DeliveryQuantityUnit,
+		DistributionChannel:           data.DistributionChannel,
+		Division:                      data.Division,
+		GLAccount:                     data.GLAccount,
+		GoodsMovementStatus:           data.GoodsMovementStatus,
+		GoodsMovementType:             data.GoodsMovementType,
+		InternationalArticleNumber:    data.InternationalArticleNumber,
+		InventorySpecialStockType:     data.InventorySpecialStockType,
+		IsCompletelyDelivered:         data.IsCompletelyDelivered,
+		ItemBillingBlockReason:        data.ItemBillingBlockReason,
+		ItemDeliveryIncompletionStatus: data.ItemDeliveryIncompletionStatus,
+		ItemGdsMvtIncompletionSts:     data.ItemGdsMvtIncompletionSts,
+		ItemGrossWeight:               data.ItemGrossWeight,
+		ItemNetWeight:                 data.ItemNetWeight,
+		ItemWeightUnit:                data.ItemWeightUnit,
+		ItemIsBillingRelevant:         data.ItemIsBillingRelevant,
+		ItemPackingIncompletionStatus: data.ItemPackingIncompletionStatus,
+		ItemPickingIncompletionStatus: data.ItemPickingIncompletionStatus,
+		ItemVolume:                    data.ItemVolume,
+		LastChangeDate:                data.LastChangeDate,
+		LoadingGroup:                  data.LoadingGroup,
+		Material:                      data.Material,
+		MaterialByCustomer:            data.MaterialByCustomer,
+		MaterialFreightGroup:          data.MaterialFreightGroup,
+		NumberOfSerialNumbers:         data.NumberOfSerialNumbers,
+		OrderID:                       data.OrderID,
+		OrderItem:                     data.OrderItem,
+		OriginalDeliveryQuantity:      data.OriginalDeliveryQuantity,
+		PackingStatus:                 data.PackingStatus,
+		PartialDeliveryIsAllowed:      data.PartialDeliveryIsAllowed,
+		PickingConfirmationStatus:     data.PickingConfirmationStatus,
+		PickingStatus:                 data.PickingStatus,
+		Plant:                         data.Plant,
+		ProductAvailabilityDate:       data.ProductAvailabilityDate,
+		ProductAvailabilityTime:       data.ProductAvailabilityTime,
+		ProfitCenter:                  data.ProfitCenter,
+		StorageLocation:               data.StorageLocation,
+		TransportationGroup:           data.TransportationGroup,
+		ToItemDocumentFlow:            data.ToItemDocumentFlow.Deferred.URI,
+		})
+	}
+
+	return toItem, nil
+}
+
+func ConvertToToItemDocumentFlow(raw []byte, l *logger.Logger) ([]ToItemDocumentFlow, error) {
+	pm := &responses.ToItemDocumentFlow{}
+
+	err := json.Unmarshal(raw, pm)
+	if err != nil {
+		return nil, xerrors.Errorf("cannot convert to ToItemDocumentFlow. unmarshal error: %w", err)
+	}
+	if len(pm.D.Results) == 0 {
+		return nil, xerrors.New("Result data is not exist")
+	}
+	if len(pm.D.Results) > 10 {
+		l.Info("raw data has too many Results. %d Results exist. show the first 10 of Results array", len(pm.D.Results))
+	}
+
+	toItemDocumentFlow := make([]ToItemDocumentFlow, 0, 10)
+	for i := 0; i < 10 && i < len(pm.D.Results); i++ {
+		data := pm.D.Results[i]
+		toItemDocumentFlow = append(toItemDocumentFlow, ToItemDocumentFlow{
+	Deliveryversion:                data.Deliveryversion,
+	PrecedingDocument:              data.PrecedingDocument,
+	PrecedingDocumentCategory:      data.PrecedingDocumentCategory,
+	PrecedingDocumentItem:          data.PrecedingDocumentItem,
+	Subsequentdocument:             data.Subsequentdocument,
+	QuantityInBaseUnit:             data.QuantityInBaseUnit,
+	SubsequentDocumentItem:         data.SubsequentDocumentItem,
+	SDFulfillmentCalculationRule:   data.SDFulfillmentCalculationRule,
+	SubsequentDocumentCategory:     data.SubsequentDocumentCategory,
+	TransferOrderInWrhsMgmtIsConfd: data.TransferOrderInWrhsMgmtIsConfd,
+		})
+	}
+
+	return toItemDocumentFlow, nil
 }

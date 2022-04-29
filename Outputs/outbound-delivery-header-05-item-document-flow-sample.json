@@ -1,0 +1,44 @@
+{
+	"cursor": "/Users/latona2/bitbucket/sap-api-integrations-outbound-delivery-reads/SAP_API_Caller/caller.go#L96",
+	"function": "sap-api-integrations-outbound-delivery-reads/SAP_API_Caller.(*SAPAPICaller).Header",
+	"level": "INFO",
+	"message": [
+		{
+			"Deliveryversion": "0002",
+			"PrecedingDocument": "80000000",
+			"PrecedingDocumentCategory": "J",
+			"PrecedingDocumentItem": "000010",
+			"Subsequentdocument": "90000000",
+			"QuantityInBaseUnit": "3.000",
+			"SubsequentDocumentItem": "000010",
+			"SDFulfillmentCalculationRule": "+",
+			"SubsequentDocumentCategory": "M",
+			"TransferOrderInWrhsMgmtIsConfd": false
+		},
+		{
+			"Deliveryversion": "0002",
+			"PrecedingDocument": "80000000",
+			"PrecedingDocumentCategory": "J",
+			"PrecedingDocumentItem": "000010",
+			"Subsequentdocument": "4900000139",
+			"QuantityInBaseUnit": "3.000",
+			"SubsequentDocumentItem": "000001",
+			"SDFulfillmentCalculationRule": "+",
+			"SubsequentDocumentCategory": "R",
+			"TransferOrderInWrhsMgmtIsConfd": false
+		},
+		{
+			"Deliveryversion": "0002",
+			"PrecedingDocument": "80000000",
+			"PrecedingDocumentCategory": "J",
+			"PrecedingDocumentItem": "000010",
+			"Subsequentdocument": "20160817",
+			"QuantityInBaseUnit": "3.000",
+			"SubsequentDocumentItem": "082143",
+			"SDFulfillmentCalculationRule": "",
+			"SubsequentDocumentCategory": "Q",
+			"TransferOrderInWrhsMgmtIsConfd": false
+		}
+	],
+	"time": "2022-01-27T22:51:14+09:00"
+}
